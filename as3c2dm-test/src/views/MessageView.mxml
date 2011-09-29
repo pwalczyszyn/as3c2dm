@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="C2DM Message"
+		viewActivate="view_viewActivateHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import spark.events.ViewNavigatorEvent;
+			
+			protected function view_viewActivateHandler(event:ViewNavigatorEvent):void
+			{
+				lbl.text = data as String;
+			}
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Label id="lbl" fontSize="20" fontWeight="bold" horizontalCenter="0" verticalCenter="0"/>
+	
+</s:View>

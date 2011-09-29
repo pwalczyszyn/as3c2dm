@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009"
+					   xmlns:s="library://ns.adobe.com/flex/spark"
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   currentState="login">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.ObjectUtil;
+			import mx.validators.Validator;
+			
+			protected var auth:String;
+			
+			protected var persistance:SharedObject;
+			
+			protected function btnSignIn_clickHandler(event:MouseEvent):void
+			{
+				httpService.url = "https://www.google.com/accounts/ClientLogin";
+				httpService.addEventListener(ResultEvent.RESULT, signIn_resultHandler);
+				httpService.addEventListener(FaultEvent.FAULT, signIn_faultHandler);
+				httpService.send({accountType:"HOSTED_OR_GOOGLE", Email : txtLogin.text, 
+					Passwd : txtPassword.text, service : "ac2dm", source : "riaspace-c2dmair-1.0"});
+			}
+
+			private function signIn_resultHandler(event:ResultEvent):void
+			{
+				httpService.removeEventListener(ResultEvent.RESULT, signIn_resultHandler);
+				httpService.removeEventListener(FaultEvent.FAULT, signIn_faultHandler);
+
+				if (chbRememberMe.selected)
+				{
+					var ba:ByteArray = new ByteArray;
+					ba.writeObject({login: txtLogin.text, password: txtPassword.text});
+					EncryptedLocalStore.setItem("rememberMe", ba);
+				}
+				
+				httpService.url = "https://android.apis.google.com/c2dm/send";
+				httpService.addEventListener(ResultEvent.RESULT, sendMessage_resultHandler);
+				httpService.addEventListener(FaultEvent.FAULT, sendMessage_faultHandler);
+				
+				var resultSplit:Array = String(event.result).split("\n");
+				for each(var line:String in resultSplit)
+				{
+					if (line.indexOf("Auth=") == 0)
+						auth = line.substr(5);
+				}
+				
+				if (auth)
+					currentState = "loggedIn";
+				else
+					Alert.show("Couldn't parse Auth value from returned result: " + event.result, "Error!");
+			}
+			
+			protected function signIn_faultHandler(event:FaultEvent):void
+			{
+				httpService.removeEventListener(ResultEvent.RESULT, signIn_resultHandler);
+				httpService.removeEventListener(FaultEvent.FAULT, signIn_faultHandler);
+				Alert.show(event.fault.faultString);
+			}
+			
+			protected function sendMessage_resultHandler(event:ResultEvent):void
+			{
+				Alert.show("Message was sent, returned result object:\n" + ObjectUtil.toString(event.result));
+			}
+			
+			protected function sendMessage_faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Failed sending message with following http code: " + event.statusCode);
+			}
+			
+			protected function btnSend_clickHandler(event:MouseEvent):void
+			{
+				if (Validator.validateAll(validators).length == 0)
+				{
+					var obj:Object = new Object;
+					obj.registration_id = txtRegistrationId.text;
+					if (txtCollapseKey.text)
+						obj.collapse_key = txtCollapseKey.text;
+					
+					if (chbDelayWhileIdle.selected)
+						obj.delay_while_idle;
+					
+					for each (var item:Object in messageData) 
+					{
+						if (item.key)
+							obj["data." + item.key] = item.value;	
+					}
+					
+					httpService.method = URLRequestMethod.POST;
+					httpService.headers["Authorization"] = "GoogleLogin auth=" + auth;
+					httpService.send(obj);
+					
+					persistance.data["registration_id"] = obj.registration_id;
+					persistance.data["collapse_key"] = obj.collapse_key;
+					persistance.data["delay_while_idle"] = chbDelayWhileIdle.selected;
+					persistance.data["messageData"] = messageData;
+					persistance.flush();
+				}
+			}
+			
+			protected function loggedIn_enterStateHandler(event:FlexEvent):void
+			{
+				persistance = SharedObject.getLocal("persistance");
+				
+				txtRegistrationId.text = persistance.data["registration_id"];
+				txtCollapseKey.text = persistance.data["collapse_key"];
+				chbDelayWhileIdle.selected = persistance.data["delay_while_idle"];
+				
+				var messageData:ArrayCollection = persistance.data["messageData"];
+				if (messageData)
+					this.messageData.addAll(messageData);
+				else
+					for (var i:int = 0; i < 4; i++) 
+					{
+						this.messageData.addItem({key:"", value:""});
+					}
+			}
+			
+			protected function login_enterStateHandler(event:FlexEvent):void
+			{
+				var ba:ByteArray = EncryptedLocalStore.getItem("rememberMe");
+				if (ba)
+				{
+					var loginObj:Object = ba.readObject();
+					txtLogin.text = loginObj.login;
+					txtPassword.text = loginObj.password;
+					chbRememberMe.selected = true;
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="login" enterState="login_enterStateHandler(event)"/>
+		<s:State name="loggedIn" enterState="loggedIn_enterStateHandler(event)"/>
+	</s:states>
+	
+	<fx:Declarations>
+		<s:HTTPService id="httpService" method="POST" />
+		<fx:Array id="validators">
+			<mx:StringValidator required="true" source="{txtRegistrationId}" property="text" />
+			<mx:StringValidator required="true" source="{txtCollapseKey}" property="text" />
+		</fx:Array>
+	</fx:Declarations>
+	
+	<s:Form includeIn="login" horizontalCenter="0" verticalCenter="0" defaultButton="{btnSignIn}">
+		<s:layout>
+			<s:FormLayout gap="0" />
+		</s:layout>
+		<s:FormItem label="Login:">
+			<s:TextInput id="txtLogin" width="180" prompt="username@gmail.com" />
+		</s:FormItem>
+		<s:FormItem label="Password:">
+			<s:TextInput id="txtPassword" width="180" displayAsPassword="true" prompt="GMail password"/>
+		</s:FormItem>
+		<s:FormItem>
+			<s:CheckBox id="chbRememberMe" label="Remember me" />
+		</s:FormItem>
+		<s:FormItem>
+			<s:Button id="btnSignIn" label="Sign In" click="btnSignIn_clickHandler(event)"/>
+		</s:FormItem>
+	</s:Form>
+	
+	<s:Label id="lblC2DMDocs" includeIn="login" color="#2366FF" horizontalCenter="0"
+			 text="C2DM on Google Labs" textDecoration="underline" verticalCenter="130"
+			 buttonMode="true" useHandCursor="true" mouseChildren="false"
+			 click="navigateToURL(new URLRequest('http://code.google.com/android/c2dm/index.html'))"/>
+	
+	<s:Label id="lblC2DMSignupForm" includeIn="login" color="#2366FF" horizontalCenter="0"
+			 text="C2DM Signup Form" textDecoration="underline" verticalCenter="160"
+			 buttonMode="true" useHandCursor="true" mouseChildren="false"
+			 click="navigateToURL(new URLRequest('http://code.google.com/android/c2dm/signup.html'))"/>
+	
+	<s:Scroller includeIn="loggedIn" left="10" right="10" top="10" bottom="80">
+		<s:Group width="100%">
+			<s:Form width="100%">
+				<s:FormItem width="100%" label="Registration ID:" required="true">
+					<s:TextInput id="txtRegistrationId" width="100%"/>
+				</s:FormItem>
+				<s:FormItem width="100%" label="Collapse key:" required="true">
+					<s:TextInput id="txtCollapseKey" width="100%"/>
+				</s:FormItem>
+				<s:FormItem width="100%" label="Delay while idle:">
+					<s:CheckBox id="chbDelayWhileIdle" />
+				</s:FormItem>
+				<s:FormItem label="Message data:">
+					<s:DataGrid width="100%" editable="true">
+						<s:columns>
+							<s:ArrayList>
+								<s:GridColumn dataField="key" headerText="Key"></s:GridColumn>
+								<s:GridColumn dataField="value" headerText="Value"></s:GridColumn>
+							</s:ArrayList>
+						</s:columns>
+						<s:typicalItem>
+							<fx:Object key="key" value="value"></fx:Object>
+						</s:typicalItem>
+						<s:dataProvider>
+							<s:ArrayCollection id="messageData" />
+						</s:dataProvider>
+					</s:DataGrid>
+				</s:FormItem>
+			</s:Form>
+		</s:Group>
+	</s:Scroller>
+	<s:Button id="btnSend" includeIn="loggedIn" left="10" right="10" bottom="10" height="60"
+			  label="Send" click="btnSend_clickHandler(event)"/>
+		
+</s:WindowedApplication>

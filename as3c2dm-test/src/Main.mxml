@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:ViewNavigatorApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" applicationDPI="160"
+			   applicationComplete="application_applicationCompleteHandler(event)"
+			   title="C2DM Test App" firstView="views.HomeView">
+	
+	<fx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			
+			import views.MessageView;
+			
+			protected function application_applicationCompleteHandler(event:FlexEvent):void
+			{
+				// Registering InvokeEvent listener to handle application activation from notifications
+				NativeApplication.nativeApplication.addEventListener(InvokeEvent.INVOKE, onInvoke);
+			}
+
+			private function onInvoke(event:InvokeEvent):void
+			{
+				if (event.arguments.length > 0)
+				{
+					// Pushing view with received message
+					navigator.pushView(MessageView, event.arguments[0]);
+				}
+			}
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+</s:ViewNavigatorApplication>

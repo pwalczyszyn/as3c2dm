@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" title="C2DM"
+		creationComplete="view_creationCompleteHandler(event)">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.riaspace.c2dm.C2DM;
+			import com.riaspace.c2dm.events.C2DMRegistrationEvent;
+			
+			import mx.events.FlexEvent;
+			
+			import spark.managers.PersistenceManager;
+			
+			protected var persistence:PersistenceManager = new PersistenceManager;
+			
+			protected var c2dm:C2DM;
+			
+			[Bindable]
+			protected var registered:Boolean = false;
+			
+			protected function view_creationCompleteHandler(event:FlexEvent):void
+			{
+				// Using C2DM ANE to register application in C2DM service
+				c2dm = new C2DM;
+				// Listening for un/registered event
+				c2dm.addEventListener(C2DMRegistrationEvent.REGISTERED, onRegistered);
+				c2dm.addEventListener(C2DMRegistrationEvent.UNREGISTERED, onUnregistered);
+				c2dm.addEventListener(C2DMRegistrationEvent.ERROR, onError);
+				
+				// Checking if application was already registered in C2DM service
+				var registrationId:String = persistence.getProperty("registration_id") as String;
+				registered = registrationId != null;
+				
+				trace("Current registration id:", registrationId);
+			}
+
+			private function onError(event:C2DMRegistrationEvent):void
+			{
+				trace("C2DM error:", event.text);
+			}
+
+			protected function btnRegister_clickHandler(event:MouseEvent):void
+			{
+				// Passing the C2DM messsage sender email
+				c2dm.register("piotr.walczyszyn@gmail.com");
+			}
+			
+			protected function btnUnregister_clickHandler(event:MouseEvent):void
+			{
+				// Unregistering from C2DM service
+				c2dm.unregister();
+			}
+
+			private function onRegistered(event:C2DMRegistrationEvent):void
+			{
+				trace("Registered with registration id:", event.text);
+				
+				// Storing registration id received from C2DM service
+				persistence.setProperty("registration_id", event.text);
+
+				registered = true;
+			}
+			
+			private function onUnregistered(event:C2DMRegistrationEvent):void
+			{
+				trace("Unregistered from C2DM service");
+				
+				// Removing current registration id
+				persistence.setProperty("registration_id", null);
+				
+				registered = false;
+			}
+
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:VGroup verticalCenter="0" horizontalCenter="0" gap="20">
+		<s:Button id="btnRegister" label="Register" click="btnRegister_clickHandler(event)" 
+				  enabled="{!registered}" width="150" />
+		<s:Button id="btnUnregister" label="Unregister" click="btnUnregister_clickHandler(event)" 
+				  enabled="{registered}" width="150" />
+	</s:VGroup>
+	
+</s:View>
