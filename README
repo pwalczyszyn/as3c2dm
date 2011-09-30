@@ -1,0 +1,5 @@
+as3c2dm is an Adobe AIR native extension to push notifications with C2DM.
+
+C2DM allows you to push notifications to your Android applications. The cool thing about it is that your application doesn’t have to run in the background in order to receive messages. In case of my ANE it creates a notification with specified ticker, title and text. When the user taps on the notification it runs AIR application and pass sent message text that is displayed in the app. Checkout the magic for yourself in the video below.
+
+It is distributed under Apache 2.0 license.
