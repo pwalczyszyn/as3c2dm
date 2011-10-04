@@ -20,23 +20,21 @@ package com.riaspace.c2dm.events
 {
 	import flash.events.Event;
 	
-	public class C2DMRegistrationEvent extends Event
+	public class C2DMErrorEvent extends Event
 	{
-		public static const REGISTERED:String = "registered";
+		public static const ERROR:String = "error";
 		
-		public static const UNREGISTERED:String = "unregistered";
+		public var errorCode:String;
 		
-		public var registrationId:String;
-		
-		public function C2DMRegistrationEvent(type:String, registrationId:String = null, bubbles:Boolean=false, cancelable:Boolean=false)
+		public function C2DMErrorEvent(type:String, errorCode:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
-			this.registrationId = registrationId;
+			this.errorCode = errorCode;
 			super(type, bubbles, cancelable);
 		}
 		
 		override public function clone():Event
 		{
-			return new C2DMRegistrationEvent(type, registrationId, bubbles, cancelable);
+			return new C2DMErrorEvent(type, errorCode, bubbles, cancelable);
 		}
 	}
 }

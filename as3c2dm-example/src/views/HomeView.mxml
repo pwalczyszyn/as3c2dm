@@ -25,6 +25,7 @@
 	<fx:Script>
 		<![CDATA[
 			import com.riaspace.c2dm.C2DM;
+			import com.riaspace.c2dm.events.C2DMErrorEvent;
 			import com.riaspace.c2dm.events.C2DMRegistrationEvent;
 			
 			import mx.events.FlexEvent;
@@ -42,10 +43,10 @@
 			{
 				// Using C2DM ANE to register application in C2DM service
 				c2dm = new C2DM;
-				// Listening for un/registered event
+				// Listening for un/registered, error events
 				c2dm.addEventListener(C2DMRegistrationEvent.REGISTERED, onRegistered);
 				c2dm.addEventListener(C2DMRegistrationEvent.UNREGISTERED, onUnregistered);
-				c2dm.addEventListener(C2DMRegistrationEvent.ERROR, onError);
+				c2dm.addEventListener(C2DMErrorEvent.ERROR, onError);
 				
 				// Checking if application was already registered in C2DM service
 				var registrationId:String = persistence.getProperty("registration_id") as String;
@@ -56,7 +57,7 @@
 
 			private function onError(event:C2DMRegistrationEvent):void
 			{
-				trace("C2DM error:", event.text);
+				trace("C2DM error:", event.registrationId);
 			}
 
 			protected function btnRegister_clickHandler(event:MouseEvent):void
@@ -73,10 +74,10 @@
 
 			private function onRegistered(event:C2DMRegistrationEvent):void
 			{
-				trace("Registered with registration id:", event.text);
+				trace("Registered with registration id:", event.registrationId);
 				
 				// Storing registration id received from C2DM service
-				persistence.setProperty("registration_id", event.text);
+				persistence.setProperty("registration_id", event.registrationId);
 
 				registered = true;
 			}

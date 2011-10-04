@@ -18,15 +18,16 @@
 
 package com.riaspace.c2dm
 {
+	import com.riaspace.c2dm.events.C2DMErrorEvent;
 	import com.riaspace.c2dm.events.C2DMRegistrationEvent;
 	
 	import flash.events.EventDispatcher;
 	import flash.events.StatusEvent;
 	import flash.external.ExtensionContext;
 
+	[Event(name="error", type="com.riaspace.c2dm.events.C2DMErrorEvent")]
 	[Event(name="registered", type="com.riaspace.c2dm.events.C2DMRegistrationEvent")]
 	[Event(name="unregistered", type="com.riaspace.c2dm.events.C2DMRegistrationEvent")]
-	[Event(name="error", type="com.riaspace.c2dm.events.C2DMRegistrationEvent")]
 	
 	public class C2DM extends EventDispatcher
 	{
@@ -52,7 +53,10 @@ package com.riaspace.c2dm
 		{
 			if (["registered", "unregistered", "error"].indexOf(event.level) >= 0)
 			{
-				dispatchEvent(new C2DMRegistrationEvent(event.level, event.code));
+				if (event.level == "error")
+					dispatchEvent(new C2DMErrorEvent(C2DMErrorEvent.ERROR, event.code));
+				else
+					dispatchEvent(new C2DMRegistrationEvent(event.level, event.code));
 			}
 			else
 			{

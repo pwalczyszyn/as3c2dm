@@ -3,6 +3,8 @@
   <includeClasses>
     <classEntry path="com.riaspace.c2dm.C2DM"/>
     <classEntry path="com.riaspace.c2dm.events.C2DMRegistrationEvent"/>
+    <classEntry path="com.riaspace.c2dm.events.C2DMErrorEvent"/>
+    <classEntry path="com.riaspace.c2dm.C2DMErrorCodes"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

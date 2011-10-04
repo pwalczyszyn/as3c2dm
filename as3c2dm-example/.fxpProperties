@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fxpProperties abbreviated="false" authoringTool="Flex Builder" compiles="true" parentProject="40257871-b911-455d-b0ae-9babddd868be" projectUUID="40257871-b911-455d-b0ae-9babddd868be" pureCatalystProject="false" sdkVersion="4.5.2" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b" version="15">
+  <projects/>
+  <src/>
+  <swc>
+    <linked location="/extensions/as3c2dm.ane" path="/extensions/as3c2dm.ane" position="2" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
+    <linked location="sdkPlaceHolder" path="sdkPlaceHolder" position="0" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
+    <linked location="/libs" path="/libs" position="1" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
+    <linked location="/extensions/as3c2dm.ane" path="\extensions\as3c2dm.ane" position="2" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
+  </swc>
+  <misc/>
+  <theme/>
+  <mxmlFormattingPrefs groupAttributesByState="true" maxLineWidth="100" mxmlAlignAttributes="true" mxmlAttributeOrder="id,userLabel,includeIn,excludeFrom,visible,x,y,z,left,right,top,bottom,width,height,minWidth,minHeight,maxWidth,maxHeight,label" mxmlKeepAttributeValuesOrganized="true"/>
+</fxpProperties>
