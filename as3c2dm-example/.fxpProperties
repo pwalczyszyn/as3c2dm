@@ -4,6 +4,7 @@
   <src/>
   <swc>
     <linked location="/extensions/as3c2dm.ane" path="/extensions/as3c2dm.ane" position="2" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
+    <linked location="/extensions/as3c2dm.ane" path="/extensions/as3c2dm.ane" position="2" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
     <linked location="sdkPlaceHolder" path="sdkPlaceHolder" position="0" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
     <linked location="/libs" path="/libs" position="1" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>
     <linked location="/extensions/as3c2dm.ane" path="\extensions\as3c2dm.ane" position="2" uuid="8e85b75c-1431-49cb-aea3-44ff35af329b"/>

@@ -55,15 +55,15 @@
 				trace("Current registration id:", registrationId);
 			}
 
-			private function onError(event:C2DMRegistrationEvent):void
+			private function onError(event:C2DMErrorEvent):void
 			{
-				trace("C2DM error:", event.registrationId);
+				trace("C2DM error:", event.errorCode);
 			}
 
 			protected function btnRegister_clickHandler(event:MouseEvent):void
 			{
-				// Passing the C2DM messsage sender email
-				c2dm.register("piotr.walczyszyn@gmail.com");
+				// Passing the C2DM registration sender email
+				c2dm.register("username@gmail.com");
 			}
 			
 			protected function btnUnregister_clickHandler(event:MouseEvent):void
