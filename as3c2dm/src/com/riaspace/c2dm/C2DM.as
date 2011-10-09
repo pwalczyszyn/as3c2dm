@@ -24,6 +24,7 @@ package com.riaspace.c2dm
 	import flash.events.EventDispatcher;
 	import flash.events.StatusEvent;
 	import flash.external.ExtensionContext;
+	import flash.system.Capabilities;
 
 	[Event(name="error", type="com.riaspace.c2dm.events.C2DMErrorEvent")]
 	[Event(name="registered", type="com.riaspace.c2dm.events.C2DMRegistrationEvent")]
@@ -39,6 +40,12 @@ package com.riaspace.c2dm
 			extContext.addEventListener(StatusEvent.STATUS, onStatus);
 		}
 
+		public static function get isSupported():Boolean
+		{
+			var manufacturer:String = Capabilities.manufacturer.toLowerCase();
+			return manufacturer.indexOf("android") >= 0; 
+		}
+		
 		public function register(emailOfSender:String):void
 		{
 			extContext.call("register", emailOfSender);

@@ -41,18 +41,21 @@
 			
 			protected function view_creationCompleteHandler(event:FlexEvent):void
 			{
-				// Using C2DM ANE to register application in C2DM service
-				c2dm = new C2DM;
-				// Listening for un/registered, error events
-				c2dm.addEventListener(C2DMRegistrationEvent.REGISTERED, onRegistered);
-				c2dm.addEventListener(C2DMRegistrationEvent.UNREGISTERED, onUnregistered);
-				c2dm.addEventListener(C2DMErrorEvent.ERROR, onError);
-				
-				// Checking if application was already registered in C2DM service
-				var registrationId:String = persistence.getProperty("registration_id") as String;
-				registered = registrationId != null;
-				
-				trace("Current registration id:", registrationId);
+				if (C2DM.isSupported)
+				{
+					// Using C2DM ANE to register application in C2DM service
+					c2dm = new C2DM;
+					// Listening for un/registered, error events
+					c2dm.addEventListener(C2DMRegistrationEvent.REGISTERED, onRegistered);
+					c2dm.addEventListener(C2DMRegistrationEvent.UNREGISTERED, onUnregistered);
+					c2dm.addEventListener(C2DMErrorEvent.ERROR, onError);
+					
+					// Checking if application was already registered in C2DM service
+					var registrationId:String = persistence.getProperty("registration_id") as String;
+					registered = registrationId != null;
+					
+					trace("Current registration id:", registrationId);
+				}
 			}
 
 			private function onError(event:C2DMErrorEvent):void
@@ -101,9 +104,9 @@
 	
 	<s:VGroup verticalCenter="0" horizontalCenter="0" gap="20">
 		<s:Button id="btnRegister" label="Register" click="btnRegister_clickHandler(event)" 
-				  enabled="{!registered}" width="150" />
+				  enabled="{!registered &amp;&amp; C2DM.isSupported}" width="150" />
 		<s:Button id="btnUnregister" label="Unregister" click="btnUnregister_clickHandler(event)" 
-				  enabled="{registered}" width="150" />
+				  enabled="{registered &amp;&amp; C2DM.isSupported}" width="150" />
 	</s:VGroup>
 	
 </s:View>

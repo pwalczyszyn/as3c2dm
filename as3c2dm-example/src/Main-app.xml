@@ -255,8 +255,9 @@
         <requestedDisplayResolution>high</requestedDisplayResolution>
     </iPhone>
     
-	<extensions>
+	
+    
+<extensions>
         <extensionID>com.riaspace.c2dm</extensionID>
     </extensions>
-    
 </application>
